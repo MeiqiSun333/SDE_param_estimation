@@ -72,7 +72,7 @@ python -m src.models.train
 python -m src.visualization.plots
 ```
 
-## 📊 Model Components
+## Model Components
 
 ### State Variables
 - **X1 (SAD)**: Sadness level with fluctuating baseline
