@@ -33,18 +33,45 @@ emotion_network_model/
 └── results/           # Model outputs and figures
 ```
 
-## Quick Start
+## Installation
 
-### Installation
+Clone the repository and install the required dependencies. Note that this project heavily relies on JAX for automatic differentiation.
 
 ```bash
-# Clone the repository
-git clone <your-repo-url>
-cd emotion_network_model
-
-# Install dependencies
+git clone [https://github.com/yourusername/SDE_param_estimation.git](https://github.com/yourusername/SDE_param_estimation.git)
+cd SDE_param_estimation
 pip install -r requirements.txt
-```
+
+(Note: For JAX GPU support, please follow the official JAX installation guide.)
+
+## Quick Start & Validation
+
+We provide a comprehensive test suite to demonstrate the accuracy of our parameter recovery engines. You can run the optimization test to see how well the algorithms recover parameters from high-frequency synthetic SDE data:
+
+```bash
+python test_optimization.py
+
+Expected Output:
+The script will generate perfect transition data and output a comparison table like this:
+
+```Plaintext
+========================================================
+  PARAMETER RECOVERY REPORT: AIT_SAHALIA
+========================================================
+Parameter       | True Value   | Estimated    | Abs Error   
+------------------------------------------------------------
+Beta_1          | 0.4000       | 0.4012       | 0.0012      
+Beta_2          | 0.6000       | 0.5985       | 0.0015      
+...
+Sigma_1         | 0.1500       | 0.1503       | 0.0003      
+========================================================
+
+
+To run the forward simulations and visualize the emotion network dynamics:
+
+```Bash
+python run_examples.py
+
 
 ### Basic Usage
 
@@ -107,7 +134,7 @@ The model successfully captures:
 - Realistic temporal patterns
 - Individual variability through stochastic components
 
-## Methods (Likelihood-Based)
+## Parameter Estimation Methods (Likelihood-Based)
 These methods rely on deriving closed-form approximations of the transition density and using Autograd (JAX) and L-BFGS-B to maximize the log-likelihood.
 
 * **Euler-Maruyama (EM) Approximation**
