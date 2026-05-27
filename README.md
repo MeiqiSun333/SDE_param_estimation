@@ -43,7 +43,7 @@ cd SDE_param_estimation
 pip install -r requirements.txt
 ```
 
-(Note: For JAX GPU support, please follow the official JAX installation guide.)
+(Note: For JAX GPU support, please follow [the official JAX installation guide](https://jax.readthedocs.io/en/latest/installation.html).)
 
 ## Quick Start & Validation
 
