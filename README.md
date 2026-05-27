@@ -38,7 +38,7 @@ emotion_network_model/
 Clone the repository and install the required dependencies. Note that this project heavily relies on JAX for automatic differentiation.
 
 ```bash
-git clone [https://github.com/yourusername/SDE_param_estimation.git](https://github.com/yourusername/SDE_param_estimation.git)
+git clone [https://github.com/MeiqiSun333/SDE_param_estimation.git](https://github.com/MeiqiSun333/SDE_param_estimation.git)
 cd SDE_param_estimation
 pip install -r requirements.txt
 ```
