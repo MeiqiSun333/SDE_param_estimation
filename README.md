@@ -41,6 +41,7 @@ Clone the repository and install the required dependencies. Note that this proje
 git clone [https://github.com/yourusername/SDE_param_estimation.git](https://github.com/yourusername/SDE_param_estimation.git)
 cd SDE_param_estimation
 pip install -r requirements.txt
+```
 
 (Note: For JAX GPU support, please follow the official JAX installation guide.)
 
@@ -50,6 +51,7 @@ We provide a comprehensive test suite to demonstrate the accuracy of our paramet
 
 ```bash
 python test_optimization.py
+```
 
 Expected Output:
 The script will generate perfect transition data and output a comparison table like this:
@@ -65,13 +67,13 @@ Beta_2          | 0.6000       | 0.5985       | 0.0015
 ...
 Sigma_1         | 0.1500       | 0.1503       | 0.0003      
 ========================================================
-
+```
 
 To run the forward simulations and visualize the emotion network dynamics:
 
 ```Bash
 python run_examples.py
-
+```
 
 ### Basic Usage
 
