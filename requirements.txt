@@ -9,8 +9,8 @@ seaborn>=0.11.0
 scikit-learn>=1.0.0
 
 # Optional: JAX for faster optimization (GPU support)
-# jax>=0.3.0
-# jaxlib>=0.3.0
+jax>=0.3.0
+jaxlib>=0.3.0
 
 # Optional: Network visualization
 networkx>=2.6.0
