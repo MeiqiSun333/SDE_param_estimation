@@ -120,12 +120,11 @@ python -m src.visualization.plots
 
 ## Testing
 
+To test the model:
+
 ```bash
 # Run all tests
-pytest tests/
-
-# Run with coverage
-pytest --cov=src tests/
+pytest tests/test_model.py
 ```
 
 ## Results
