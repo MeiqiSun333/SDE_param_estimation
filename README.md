@@ -50,7 +50,7 @@ pip install -r requirements.txt
 We provide a comprehensive test suite to demonstrate the accuracy of our parameter recovery engines. You can run the optimization test to see how well the algorithms recover parameters from high-frequency synthetic SDE data:
 
 ```bash
-python test_optimization.py
+python tests/test_optimization.py
 ```
 
 Expected Output:
@@ -72,7 +72,21 @@ Sigma_1         | 0.1500       | 0.1503       | 0.0003
 To run the forward simulations and visualize the emotion network dynamics:
 
 ```Bash
-python run_examples.py
+python examples/run_examples.py
+```
+
+If you encounter an error such as `ModuleNotFoundError: No module named 'src'`, it usually means the project hasn't been installed in your environment. To resolve this, do one of the following:
+
+- Install the project in editable mode:
+
+```bash
+  pip install -e .
+```
+
+- Or run the examples as a module from the project root:
+
+```bash
+  python -m examples.run_examples
 ```
 
 ### Basic Usage
