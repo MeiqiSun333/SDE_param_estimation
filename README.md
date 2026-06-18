@@ -164,7 +164,7 @@ These methods rely on deriving closed-form approximations of the transition dens
   * **Pros:** Highly accurate even for sparse data (large $\Delta t$). By applying the Lamperti transform to stabilize the variance and calculating the Taylor expansion of the transition density, it mathematically approximates the *true* continuous-time dynamics.
   * **Cons:** Extremely complex to derive and implement. The analytical formulas are highly specific to the model's structural equations, meaning any change to the network requires re-deriving the Jacobian, Hessian, and integration formulas.
 
-## Alternative Approaches: Likelihood-Free / Simulation-Based Methods (Not implemented in this repository)
+## Alternative Approaches: Likelihood-Free / Simulation-Based Methods (Will be implemented in the future)
 For highly complex networks where deriving the exact transition density is intractable, we can treat the SDE solver as a "black box" and rely on computational power and machine learning.
 
 * **Approximate Bayesian Computation (ABC)**
