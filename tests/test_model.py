@@ -1,74 +1,44 @@
-"""
-Unit and integration tests for the Network Model.
-
-Run these tests using:
-    pytest test_model.py
-"""
-
-import pytest
 import numpy as np
-from src.models.network_model import EmotionNetworkModel
+
+from src.model.four_node import (
+    diffusion_numpy,
+    drift_numpy,
+    simulate_numpy,
+    targets_numpy,
+)
+from src.model.simulator import EmotionNetworkModel
 
 
-class TestEmotionNetworkModel:
-    """
-    Unit tests covering the core network simulation behaviors.
-    """
-    
-    def test_initialization(self):
-        """Test if the model initializes with correct default attributes."""
-
-        model = EmotionNetworkModel(stochastic=True, random_seed=42)
-        # assert model.num_states == 4
-        # assert model.dt == 0.5
-        assert model.stochastic is True
-    
-    def test_simulation_shape(self):
-        """Test if the simulation output matrices have aligned dimensions."""
-
-        model = EmotionNetworkModel(dt=0.5, random_seed=42)
-        end_time = 10
-        time, states = model.simulate(end_time=end_time)
-        
-        expected_steps = int(end_time / 0.5) + 1
-        assert time.shape == (expected_steps,)
-        assert states.shape == (4, expected_steps)
-    
-    def test_simulation_bounds(self):
-        """Test that the bounded diffusion keeps all state values strictly within [0, 1]."""
-
-        model = EmotionNetworkModel(stochastic=True, random_seed=42)
-        _, states = model.simulate(end_time=30)
-        
-        assert np.all(states >= 0.0), "State violation: Values dropped below 0"
-        assert np.all(states <= 1.0), "State violation: Values exceeded 1"
-    
-    def test_deterministic_simulation(self):
-        """Test that turning off stochasticity yields identical deterministic trajectories."""
-
-        model1 = EmotionNetworkModel(stochastic=False, random_seed=42)
-        model2 = EmotionNetworkModel(stochastic=False, random_seed=999) # Different seed should not matter
-        
-        _, states1 = model1.simulate(end_time=15)
-        _, states2 = model2.simulate(end_time=15)
-        
-        np.testing.assert_array_almost_equal(states1, states2, decimal=6)
+def test_four_node_equations_have_expected_shape(true_parameters):
+    states = np.array([0.2, 0.4, 0.6, 0.8])
+    assert targets_numpy(states, true_parameters[8:]).shape == (4,)
+    assert drift_numpy(states, true_parameters[:4], true_parameters[8:]).shape == (4,)
+    assert diffusion_numpy(states, true_parameters[4:8]).shape == (4,)
 
 
-class TestIntegration:
-    """Integration tests evaluating data flow pipeline reproducibility."""
-    
-    def test_reproducibility(self):
-        """Test that enforcing a random seed produces identical stochastic paths."""
-
-        model1 = EmotionNetworkModel(stochastic=True, random_seed=42)
-        model2 = EmotionNetworkModel(stochastic=True, random_seed=42)
-        
-        _, states1 = model1.simulate(end_time=20)
-        _, states2 = model2.simulate(end_time=20)
-        
-        np.testing.assert_array_equal(states1, states2)
+def test_batch_simulation_is_bounded_and_reproducible(true_parameters):
+    first = simulate_numpy(
+        true_parameters, n_trajectories=3, n_steps=20, seed=42
+    )
+    second = simulate_numpy(
+        true_parameters, n_trajectories=3, n_steps=20, seed=42
+    )
+    assert first.shape == (3, 20, 4)
+    assert np.all((first > 0) & (first < 1))
+    np.testing.assert_array_equal(first, second)
 
 
-if __name__ == "__main__":
-    pytest.main(["-v", __file__])
+def test_user_facing_simulator_returns_time_by_state_arrays():
+    model = EmotionNetworkModel(dt=0.3, stochastic=False)
+    time, states = model.simulate(end_time=1.0)
+    np.testing.assert_allclose(time, [0.0, 0.3, 0.6, 0.9, 1.0])
+    assert states.shape == (4, 5)
+
+
+def test_deterministic_simulation_does_not_depend_on_seed():
+    first = EmotionNetworkModel(stochastic=False, random_seed=1)
+    second = EmotionNetworkModel(stochastic=False, random_seed=2)
+    np.testing.assert_allclose(
+        first.simulate(end_time=2)[1],
+        second.simulate(end_time=2)[1],
+    )

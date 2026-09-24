@@ -5,6 +5,7 @@ Handles loading, cleaning, and transforming longitudinal data.
 """
 
 import pandas as pd
+import argparse
 import numpy as np
 from pathlib import Path
 from typing import List, Optional
@@ -52,7 +53,7 @@ class EmotionDataProcessor:
         data_cols = [col for col in df.columns if col not in self.skip_cols]
 
         df_clean = df[
-            df[data_cols].replace('', np.nan).replace(0, np.nan).notna().any(axis=1)
+            df[data_cols].replace('', np.nan).notna().any(axis=1)
         ].copy()
 
         return df_clean
@@ -117,12 +118,19 @@ class EmotionDataProcessor:
         # Remove rows with missing values in emotion variables
         emotion_cols = [col for col in model_cols if col not in ["UUID", "time_hours"]]
         df_model = df_model[
-            df_model[emotion_cols].replace('', np.nan).replace(0, np.nan).notna().any(axis=1)
+            df_model[emotion_cols].replace('', np.nan).notna().all(axis=1)
         ].copy()
         
         # Rename columns for clarity
         df_model.columns = ["UUID", "SAD", "STR", "SITMOD", "DIST", 
                            "REAP", "RUM", "EMOCOPE", "time_hours"]
+
+        # Recompute intervals only after incomplete observations have been
+        # removed, so every delta_t spans the observations that are actually
+        # adjacent in the modeling dataset.
+        df_model = df_model.sort_values(["UUID", "time_hours"]).copy()
+        df_model["delta_t"] = df_model.groupby("UUID")["time_hours"].diff()
+
         
         
         return df_model
@@ -151,22 +159,26 @@ class EmotionDataProcessor:
         
         # Save if output path provided
         if output_path:
+            Path(output_path).parent.mkdir(parents=True, exist_ok=True)
             df_model.to_csv(output_path, index=False)
         
         return df_model, stats
 
 
 def main():
-    
+    parser = argparse.ArgumentParser(description="Preprocess longitudinal emotion data")
+    parser.add_argument("input_path", help="Path to the raw CSV file")
+    parser.add_argument(
+        "output_path", nargs="?", default="data/processed/emotion_data_clean.csv",
+        help="Path for the processed CSV",
+    )
+    args = parser.parse_args()
+
     # Initialize processor
     processor = EmotionDataProcessor()
     
-    # Define paths
-    raw_data_path = "data/raw/data.csv"
-    processed_data_path = "data/processed/emotion_data_clean.csv"
-    
     # Run pipeline
-    df_model, stats = processor.process_pipeline(raw_data_path, processed_data_path)
+    df_model, stats = processor.process_pipeline(args.input_path, args.output_path)
     
 
     print("Data processing complete!")
